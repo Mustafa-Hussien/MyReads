@@ -3,29 +3,34 @@ import { useState, useEffect } from "react";
 import * as BookAPI from "../BooksAPI";
 import Book from "../Components/Book";
 
-const Search = ({ updateBookShelf, books }) => {
+const Search = ({ updateBookShelf }) => {
   const [query, setQuery] = useState("");
   const [searchedBooks, setSearchedBooks] = useState([]);
 
   const updateQuery = (newValue) => {
     setQuery(newValue);
+    setSearchedBooks([]);
   };
 
   useEffect(() => {
     const searchBook = async () => {
-      const res = await BookAPI.search(query);
+      const res = await BookAPI.search(query.trim());
       if (res.error) {
+        console.log("error: " + query);
         setSearchedBooks([]);
       } else {
-        console.log("it runs!");
+        console.log("it runs!:" + query);
         setSearchedBooks(res);
       }
     };
+
     if (query != "") {
       searchBook();
-    } else {
-      setSearchedBooks([]);
     }
+    // else {
+    //   console.log("empty");
+    //   setSearchedBooks([]);
+    // }
   }, [query]);
 
   return (
