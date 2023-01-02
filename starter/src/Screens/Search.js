@@ -5,8 +5,7 @@ import Book from "../Components/Book";
 
 const Search = ({ updateBookShelf, books }) => {
   const [query, setQuery] = useState("");
-  const [searchedBooks, setSearchedBooks] = useState(books);
-  console.log(searchedBooks);
+  const [searchedBooks, setSearchedBooks] = useState([]);
 
   const updateQuery = (newValue) => {
     setQuery(newValue);
@@ -15,22 +14,19 @@ const Search = ({ updateBookShelf, books }) => {
   useEffect(() => {
     const searchBook = async () => {
       const res = await BookAPI.search(query);
-      console.log(res);
-      setSearchedBooks(res);
+      if (res.error) {
+        setSearchedBooks([]);
+      } else {
+        console.log("it runs!");
+        setSearchedBooks(res);
+      }
     };
-
-    searchBook();
+    if (query != "") {
+      searchBook();
+    } else {
+      setSearchedBooks([]);
+    }
   }, [query]);
-
-  // const updateQuery = (d) => {
-  //   setQuery(d);
-  //   const setSearch = async () => {
-  //     const res = await BookAPI.search(query);
-  //     setSearchedBooks(res);
-  //     console.log(searchedBooks);
-  //   };
-  //   setSearch();
-  // };
 
   return (
     <div className="search-books">
@@ -49,7 +45,7 @@ const Search = ({ updateBookShelf, books }) => {
       </div>
       <div className="search-books-results">
         <ol className="books-grid">
-          {books.map((b) => (
+          {searchedBooks.map((b) => (
             <Book key={b.id} book={b} changeBookShelf={updateBookShelf} />
           ))}
         </ol>
