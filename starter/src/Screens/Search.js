@@ -9,13 +9,13 @@ const Search = ({ updateBookShelf }) => {
 
   const updateQuery = (newValue) => {
     setQuery(newValue);
-    setSearchedBooks([]);
+    // setSearchedBooks([]);
   };
 
   useEffect(() => {
     const searchBook = async () => {
       const res = await BookAPI.search(query.trim());
-      if (res.error) {
+      if (res && res.error) {
         console.log("error: " + query);
         setSearchedBooks([]);
       } else {
@@ -23,14 +23,11 @@ const Search = ({ updateBookShelf }) => {
         setSearchedBooks(res);
       }
     };
-
-    if (query != "") {
+    if (query !== "") {
       searchBook();
+    } else {
+      setTimeout(() => setSearchedBooks([]), 500);
     }
-    // else {
-    //   console.log("empty");
-    //   setSearchedBooks([]);
-    // }
   }, [query]);
 
   return (
@@ -43,7 +40,7 @@ const Search = ({ updateBookShelf }) => {
           <input
             type="text"
             placeholder="Search by title, author, or ISBN"
-            value={query}
+            // value={query}
             onChange={(e) => updateQuery(e.target.value)}
           />
         </div>
