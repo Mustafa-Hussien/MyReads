@@ -9,7 +9,6 @@ const Search = ({ updateBookShelf }) => {
 
   const updateQuery = (newValue) => {
     setQuery(newValue);
-    // setSearchedBooks([]);
   };
 
   useEffect(() => {
@@ -20,13 +19,16 @@ const Search = ({ updateBookShelf }) => {
         setSearchedBooks([]);
       } else {
         console.log("it runs!:" + query);
-        setSearchedBooks(res);
+        const booksWithThumbnail = res.filter(
+          (b) => b.hasOwnProperty("imageLinks") && b.hasOwnProperty("authors")
+        );
+        setSearchedBooks(booksWithThumbnail);
       }
     };
     if (query !== "") {
       searchBook();
     } else {
-      setTimeout(() => setSearchedBooks([]), 500);
+      setTimeout(() => setSearchedBooks([]), 1000);
     }
   }, [query]);
 
