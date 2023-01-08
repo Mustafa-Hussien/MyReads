@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import * as BookAPI from "../BooksAPI";
 import Book from "../Components/Book";
 
-const Search = ({ updateBookShelf }) => {
+const Search = ({ updateBookShelf, books }) => {
   const [query, setQuery] = useState("");
   const [searchedBooks, setSearchedBooks] = useState([]);
 
@@ -15,13 +15,24 @@ const Search = ({ updateBookShelf }) => {
     const searchBook = async () => {
       const res = await BookAPI.search(query.trim());
       if (res && res.error) {
-        console.log("error: " + query);
         setSearchedBooks([]);
       } else {
-        console.log("it runs!:" + query);
-        const booksWithThumbnail = res.filter(
-          (b) => b.hasOwnProperty("imageLinks") && b.hasOwnProperty("authors")
-        );
+        const booksWithThumbnail = res
+          .filter(
+            (b) => b.hasOwnProperty("imageLinks") && b.hasOwnProperty("authors")
+          )
+          .map((b) => {
+            if (books.some((book) => b.id === book.id)) {
+              books.map((book) => {
+                if (b.id === book.id) {
+                  b.shelf = book.shelf;
+                }
+              });
+            } else {
+              b.shelf = "none";
+            }
+            return b;
+          });
         setSearchedBooks(booksWithThumbnail);
       }
     };
@@ -42,7 +53,7 @@ const Search = ({ updateBookShelf }) => {
           <input
             type="text"
             placeholder="Search by title, author, or ISBN"
-            // value={query}
+            value={query}
             onChange={(e) => updateQuery(e.target.value)}
           />
         </div>

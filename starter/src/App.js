@@ -6,27 +6,31 @@ import { useState, useEffect } from "react";
 import * as BookAPI from "./BooksAPI";
 
 function App() {
-  const [books, setBooks] = useState([]);
+  const [APIBooks, setAPIBooks] = useState([]);
+  const [result, setResult] = useState([]);
 
   useEffect(() => {
     const getBooks = async () => {
       const res = await BookAPI.getAll();
-      setBooks(res);
+      setResult(res);
     };
-
     getBooks();
-  }, []);
+  }, [APIBooks]);
 
   const updateBookShelf = (book, whereTo) => {
-    const updatedBooks = books.map((b) => {
+    const updatedBooks = result.map((b) => {
       if (b.id === book.id) {
         b.shelf = whereTo;
-        return book;
+        return b;
       }
       return b;
     });
-    setBooks(updatedBooks);
-    BookAPI.update(book, whereTo);
+    const updateAPI = async () => {
+      await BookAPI.update(book, whereTo);
+      setAPIBooks(updatedBooks);
+    };
+
+    updateAPI();
   };
 
   return (
@@ -35,11 +39,11 @@ function App() {
         <Route
           exact
           path="/"
-          element={<Home updateBookShelf={updateBookShelf} books={books} />}
+          element={<Home updateBookShelf={updateBookShelf} books={result} />}
         />
         <Route
           path="/search"
-          element={<Search updateBookShelf={updateBookShelf} books={books} />}
+          element={<Search updateBookShelf={updateBookShelf} books={result} />}
         />
       </Routes>
     </div>
